@@ -98,12 +98,20 @@ public class FinanceService {
     }
 
     private void registerUser(String[] data) {
+        if (data.length != 3) {
+            System.out.println("Использовать: регистрация <имя> <пароль>");
+            return;
+        }
         var userName = data[1];
         var password = data[2];
         userStorage.registerUser(userName, password);
     }
 
     private void budget(String[] data) {
+        if (data.length != 3) {
+            System.out.println("Использовать: бюджет <категория> <сумма>");
+            return;
+        }
         if (currentUser == null) {
             System.out.println("You must be logged in");
             return;
@@ -123,6 +131,10 @@ public class FinanceService {
     }
 
     private void incomeOrExpense(String[] data, WalletItemType type) {
+        if (data.length != 3) {
+            System.out.println("Использовать: доход/расход <категория> <сумма>");
+            return;
+        }
         if (currentUser == null) {
             System.out.println("You must be logged in");
             return;
@@ -134,6 +146,10 @@ public class FinanceService {
     }
 
     private void login(String[] data) {
+        if (data.length != 3) {
+            System.out.println("Использовать: вход <имя> <пароль>");
+            return;
+        }
         var userName = data[1];
         var password = data[2];
         if (userStorage.verifyUser(userName, password)) {
