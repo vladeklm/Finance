@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,15 +16,17 @@ public class WalletStorage implements FileLoadable {
 
     @Override
     public void loadFromFile(String userName) {
-
+        var wallet = wallets.get(userName);
+        wallet.loadFromFile(userName);
     }
 
     @Override
     public void saveToFile(String userName) {
-
+        var wallet = wallets.get(userName);
+        wallet.saveToFile(userName);
     }
 
-    public class Wallet {
+    public class Wallet implements FileLoadable {
         private List<WalletItem> walletItems;
         private List<WalletBudget> budget;
 
@@ -119,6 +122,50 @@ public class WalletStorage implements FileLoadable {
         }
 
 
+        @Override
+        public void loadFromFile(String userName) {
+            var fileName = userName + "_wallet.txt";
+            walletItems = new ArrayList<>();
+            budget = new ArrayList<>();
+            try (var reader = new BufferedReader(new FileReader(fileName))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    var parts = line.split(" ");
+                    if (parts.length == 3) {
+                        var amount = new BigDecimal(parts[1]);
+                        var category = parts[2];
+                        var type = WalletItemType.valueOf(parts[0]);
+                        walletItems.add(new WalletItem(amount, category, type));
+                    }
+                    else if (parts.length == 2) {
+                        var amount = new BigDecimal(parts[0]);
+                        var category = parts[1];
+                        budget.add(new WalletBudget(amount, category));
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                //do nothing
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void saveToFile(String userName) {
+            var fileName = userName + "_wallet.txt";
+            try (var fos = new FileOutputStream(new File(fileName), true)) {
+                var writer = new OutputStreamWriter(fos);
+                for (var item : walletItems) {
+                    writer.write(item.type.toString() + " " + item.amount + " " + item.category + "\n");
+                }
+                for (var item : budget) {
+                    writer.write(item.amount + " " + item.category + "\n");
+                }
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public class WalletItem {
