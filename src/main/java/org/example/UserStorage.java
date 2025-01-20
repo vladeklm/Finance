@@ -39,9 +39,9 @@ public class UserStorage implements FileLoadable{
     }
 
     @Override
-    public void loadFromFile() {
+    public void loadFromFile(String username) {
         usernamePassword = new HashMap<>();
-        try (var reader = new BufferedReader(new FileReader(fileName))) {
+        try (var reader = new BufferedReader(new FileReader(username + ".txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 var parts = line.split(" ");
@@ -55,8 +55,8 @@ public class UserStorage implements FileLoadable{
     }
 
     @Override
-    public void saveToFile() {
-        try (var fos = new FileOutputStream(new File(fileName), true)) {
+    public void saveToFile(String username) {
+        try (var fos = new FileOutputStream(new File(username + ".txt"), true)) {
             var writer = new OutputStreamWriter(fos);
             for(var entry : usernamePassword.entrySet()) {
                 writer.write(entry.getKey() + " " + entry.getValue() + "\n");

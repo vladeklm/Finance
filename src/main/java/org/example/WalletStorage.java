@@ -14,12 +14,12 @@ public class WalletStorage implements FileLoadable {
     }
 
     @Override
-    public void loadFromFile() {
+    public void loadFromFile(String userName) {
 
     }
 
     @Override
-    public void saveToFile() {
+    public void saveToFile(String userName) {
 
     }
 
@@ -39,6 +39,23 @@ public class WalletStorage implements FileLoadable {
         public void addBudget(BigDecimal amount, String category) {
             budget.add(new WalletBudget(amount, category));
         }
+
+        public List<BudgetView> getBudgets(List<String> categories) {
+            var result = new ArrayList<BudgetView>();
+            for (var item : budget) {
+                var category = new ArrayList<String>();
+                if (categories!= null && !categories.contains(item.category)) {
+                    continue;
+                }
+                category.add(item.category);
+                var expense = getExpensesByWalletTypeAndCategory(category).get(item.category);
+                var limit = item.amount.subtract(expense);
+                result.add(new BudgetView(item.amount, limit, item.category));
+            }
+            return result;
+        }
+
+
 
         public BigDecimal getAllIncome() {
             return getAllDataByType(WalletItemType.INCOME);
@@ -64,8 +81,24 @@ public class WalletStorage implements FileLoadable {
             return getDataByWalletType(WalletItemType.EXPENSE);
         }
 
-        public Map<String, BigDecimal> getDataDataByWalletTypeAndCategory(WalletItemType walletItemType, String category) {
+        public Map<String, BigDecimal> getIncomesByWalletTypeAndCategory(List<String> categories) {
+            return getDataByWalletTypeAndCategory(WalletItemType.INCOME, categories);
+        }
 
+        public Map<String, BigDecimal> getExpensesByWalletTypeAndCategory(List<String> categories) {
+            return getDataByWalletTypeAndCategory(WalletItemType.EXPENSE, categories);
+        }
+
+        private Map<String, BigDecimal> getDataByWalletTypeAndCategory(WalletItemType walletItemType, List<String> categories) {
+
+            var tempResult = getDataByWalletType(walletItemType);
+            var result = new HashMap<String, BigDecimal>();
+            for (var category : categories) {
+                if (tempResult.containsKey(category)) {
+                    result.put(category, tempResult.get(category));
+                }
+            }
+            return result;
         }
 
         private Map<String, BigDecimal> getDataByWalletType(WalletItemType walletItemType) {
@@ -126,6 +159,25 @@ public class WalletStorage implements FileLoadable {
         private String category;
         private BigDecimal amount;
         private BigDecimal limit;
+
+        public BudgetView(BigDecimal amount, BigDecimal limit, String category) {
+            this.amount = amount;
+            this.limit = limit;
+            this.category = category;
+        }
+
+        public String getCategory() {
+            return category;
+        }
+
+        public BigDecimal getAmount() {
+            return amount;
+        }
+
+        public BigDecimal getLimit() {
+            return limit;
+        }
     }
+
 
 }
