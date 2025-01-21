@@ -17,6 +17,10 @@ public class WalletStorage implements FileLoadable {
     @Override
     public void loadFromFile(String userName) {
         var wallet = wallets.get(userName);
+        if (wallet == null) {
+            wallet = new Wallet();
+            wallets.put(userName, wallet);
+        }
         wallet.loadFromFile(userName);
     }
 
