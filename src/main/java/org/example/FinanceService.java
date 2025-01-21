@@ -20,33 +20,46 @@ public class FinanceService {
 
     public void start() {
         System.out.println("FinanceService started");
+        var isStop = false;
         while (true) {
-            var line = scanner.nextLine();
-            var data = line.split(" ");
-            switch (data[0]) {
-                case "доход":
-                    income(data);
+            try {
+                var line = scanner.nextLine();
+                var data = line.split(" ");
+                switch (data[0]) {
+                    case "доход":
+                        income(data);
+                        break;
+                    case "расход":
+                        expense(data);
+                        break;
+                    case "бюджет":
+                        budget(data);
+                        break;
+                    case "расчёт":
+                        calculate(data);
+                        break;
+                    case "вход":
+                        login(data);
+                        break;
+                    case "выход":
+                        logout();
+                        break;
+                    case "регистрация":
+                        registerUser(data);
+                        break;
+                    case "стоп":
+                        isStop = true;
+                        break;
+                    default:
+                        System.out.println("Unknown command");
+                }
+                if (isStop) {
                     break;
-                case "расход":
-                    expense(data);
-                    break;
-                case "бюджет":
-                    budget(data);
-                    break;
-                case "расчёт":
-                    calculate(data);
-                    break;
-                case "вход":
-                    login(data);
-                    break;
-                case "выход":
-                    logout();
-                    break;
-                case "регистрация":
-                    registerUser(data);
-                    break;
-                default:
-                    System.out.println("Unknown command");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format");
+            } catch (Exception e) {
+                System.out.println("Unknown error" + e.getMessage());
             }
         }
     }
