@@ -157,7 +157,7 @@ public class WalletStorage implements FileLoadable {
         @Override
         public void saveToFile(String userName) {
             var fileName = userName + "_wallet.txt";
-            try (var fos = new FileOutputStream(new File(fileName), true)) {
+            try (var fos = new FileOutputStream(new File(fileName), false)) {
                 var writer = new OutputStreamWriter(fos);
                 for (var item : walletItems) {
                     writer.write(item.type.toString() + " " + item.amount + " " + item.category + "\n");

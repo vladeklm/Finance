@@ -58,7 +58,7 @@ public class UserStorage implements FileLoadable{
 
     @Override
     public void saveToFile(String username) {
-        try (var fos = new FileOutputStream(new File(username + ".txt"), true)) {
+        try (var fos = new FileOutputStream(new File(fileName + ".txt"), true)) {
             var writer = new OutputStreamWriter(fos);
             for(var entry : usernamePassword.entrySet()) {
                 writer.write(entry.getKey() + " " + entry.getValue() + "\n");
