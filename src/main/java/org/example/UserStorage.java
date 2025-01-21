@@ -40,11 +40,13 @@ public class UserStorage implements FileLoadable{
 
     @Override
     public void loadFromFile(String username) {
-        usernamePassword = new HashMap<>();
         try (var reader = new BufferedReader(new FileReader(username + ".txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 var parts = line.split(" ");
+                if (usernamePassword.get(parts[0])!= null) {
+                    continue;
+                }
                 usernamePassword.put(parts[0], Integer.parseInt(parts[1]));
             }
         } catch (FileNotFoundException e) {

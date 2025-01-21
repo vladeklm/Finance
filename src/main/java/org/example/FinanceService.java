@@ -165,24 +165,24 @@ public class FinanceService {
         }
         var userName = data[1];
         var password = data[2];
+        loadUserData(userName);
         if (userStorage.verifyUser(userName, password)) {
             currentUser = userName;
-            loadUserData();
         }
     }
 
     private void logout() {
+        saveUserData(currentUser);
         currentUser = null;
-        saveUserData();
     }
 
-    private void saveUserData() {
-        walletStorage.saveToFile(currentUser);
-        userStorage.saveToFile(currentUser);
+    private void saveUserData(String username) {
+        walletStorage.saveToFile(username);
+        userStorage.saveToFile(username);
     }
 
-    private void loadUserData() {
-        walletStorage.loadFromFile(currentUser);
-        userStorage.loadFromFile(currentUser);
+    private void loadUserData(String username) {
+        walletStorage.loadFromFile(username);
+        userStorage.loadFromFile(username);
     }
 }
