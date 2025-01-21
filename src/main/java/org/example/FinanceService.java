@@ -50,6 +50,9 @@ public class FinanceService {
                     case "стоп":
                         isStop = true;
                         break;
+                    case "перевод":
+                        transfer(data);
+                        break;
                     default:
                         System.out.println("Unknown command");
                 }
@@ -62,6 +65,27 @@ public class FinanceService {
                 System.out.println("Unknown error" + e.getMessage());
             }
         }
+    }
+
+    private void transfer(String[] data) {
+        if (currentUser == null) {
+            System.out.println("Пользователь  не авторизован");
+            return;
+        }
+        if (data.length != 3) {
+            System.out.println("Использовать: перевод <кому> <сумма>");
+            return;
+        }
+
+        var wallet = walletStorage.getWallet(currentUser);
+        var otherUser = data[1];
+        loadUserData(otherUser);
+        var otherWallet = walletStorage.getWallet(otherUser);
+        var amount = new BigDecimal(data[2]);
+        wallet.addItem(amount, "перевод", WalletItemType.EXPENSE);
+        otherWallet.addItem(amount, "перевод", WalletItemType.INCOME);
+        saveUserData(otherUser);
+        saveUserData(currentUser);
     }
 
     private void calculate(String[] data) {
@@ -117,7 +141,14 @@ public class FinanceService {
         }
         var userName = data[1];
         var password = data[2];
-        userStorage.registerUser(userName, password);
+        var isOk = userStorage.registerUser(userName, password);
+        if (isOk) {
+            userStorage.saveToFile(userName);
+            System.out.println("Пользователь зарегистрирован");
+        }
+        else {
+            System.out.println("Пользователь не зарегистрирован");
+        }
     }
 
     private void budget(String[] data) {
@@ -168,6 +199,10 @@ public class FinanceService {
         loadUserData(userName);
         if (userStorage.verifyUser(userName, password)) {
             currentUser = userName;
+            System.out.println("Вы вошли как: " + currentUser);
+        }
+        else {
+            System.out.println("Неверный логин или пароль");
         }
     }
 

@@ -56,6 +56,9 @@ public class WalletStorage implements FileLoadable {
                 }
                 category.add(item.category);
                 var expense = getExpensesByWalletTypeAndCategory(category).get(item.category);
+                if (expense == null) {
+                    expense = BigDecimal.ZERO;
+                }
                 var limit = item.amount.subtract(expense);
                 result.add(new BudgetView(item.amount, limit, item.category));
             }
